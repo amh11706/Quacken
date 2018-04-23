@@ -42,28 +42,26 @@ setInterval(tickTimer, 1000);
 drawMap(map);
 
 function syncTimer() {
-	let seconds = timer % 60;
-	if (seconds < 10) seconds = '0' + seconds;
-
 	document.getElementById('timebar').style.transition = '0s';
-	document.getElementById('turncount').innerHTML = Math.floor(timer / 60) + ':' + seconds;
-  timer--;
-	document.getElementById('timebar').style.height = timer % 20 * 4 + 'px';
+  updateTimer();
 
 	setTimeout(function() {document.getElementById('timebar').style.transition = '.9s linear';}, 100);
 }
 
 function tickTimer() {
-  let seconds;
   if (timer < 1800 && !(timer % 20) && !timerLock) ready();
   if (timer < 0) timer = 0;
-	seconds = timer % 60;
+
+  updateTimer();
+	getUpdates();
+}
+
+function updateTimer() {
+  let seconds = timer % 60;
   if (seconds < 10) seconds = '0' + seconds;
 
-	getUpdates();
-
-	document.getElementById('turncount').innerHTML = Math.floor(timer / 60) + ':' + seconds;
-	timer--;
+  document.getElementById('turncount').innerHTML = Math.floor(timer / 60) + ':' + seconds;
+  timer--;
 	document.getElementById('timebar').style.height = timer % 20 * 4 + 'px';
 }
 
@@ -348,7 +346,7 @@ function updateMyDamage(damage) {
 function clearMyMoves() {
 	const tiles = document.getElementsByClassName("moves");
 	boats[myBoat].moves = [0,0,0,0];
-	freezeMyMoves = timer > 0;
+	freezeMyMoves = timer < 0;
 
 	for (let tile of tiles) {
 		if (tile.firstChild) tile.removeChild(tile.firstChild);

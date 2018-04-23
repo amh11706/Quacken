@@ -1,13 +1,15 @@
 <?php
 ignore_user_abort(true);
-require 'quackenpdo.php';
+require 'classes/Quackenpdo.php';
 
-if (isset($_COOKIE['token']) && isset($_GET['id']) && isset($_GET['m']) && isset($_GET['r'])) {
+if (isset($_COOKIE['token']) && isset($_GET['id']) &&
+		isset($_GET['m']) && isset($_GET['r'])) {
 	$uid = $_GET['id'];
-	$conn = new QuackenPDO($uid, $_COOKIE['token'], $_SERVER['REMOTE_ADDR']);
+	$conn = new QuackenPDO();
+	$conn->setUser($uid)
+			 ->setLobby('lobby1');
 } else kick();
 
-$conn->setLobby('lobby1');
 $user = $conn->getLobbyUser('ChatIndex, CurrentTurn, Idle');
 if (!$user) kick();
 
@@ -54,7 +56,7 @@ function getTurn(QuackenPDO $conn, int $turn) {
 
 function checkAndDoTurn(QuackenPDO $conn) {
 	if ($conn->query("SELECT Ready FROM lobby1 WHERE Ready = 0 AND Idle = 0")->fetch() ||
-			!$conn->exec("UPDATE lobbies SET TurnActive = 1 WHERE TurnActive = 0")) return;
+		 !$conn->exec("UPDATE lobbies SET TurnActive = 1 WHERE TurnActive = 0")) return;
 
 	require 'classes/Turn.php';
 	require 'classes/Boat.php';

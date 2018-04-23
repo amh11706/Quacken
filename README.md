@@ -4,4 +4,4 @@ Source code for Quacken.net.
 Here you will find the source code for the single player Quacken minigame. 
 This is a very early version included only for the sake of completeness.
 
-The app is launched using "quacken.php".
+The app is launched using "quacken.html".

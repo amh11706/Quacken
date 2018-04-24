@@ -2,7 +2,7 @@ let freezeMyMoves = false;
 let timerLock = false;
 let waitingForTurn = false;
 let timeOut = 0;
-let step = 8;
+let step = 7;
 let turn;
 let animateTimeout;
 let blurred = false;
@@ -18,7 +18,7 @@ document.addEventListener('visibilitychange', function(){
   if (blurred) {
 	  clearTimeout(animateTimeout);
 	  if (step < 4) clearMyMoves();
-	  step = 8;
+	  step = 7;
   } else if (turn) {
 	  endTurn();
 	  syncTimer();
@@ -128,7 +128,7 @@ function getUpdates() {
 function parseResponse(response) {
 	if (response == 'kick') {
     addMessage('kick', 'error');
-    //window.location.replace("/accounts.php?target=/dev/quacken.php&m=Invalid%20Session");
+    window.location.replace("/accounts.php?target=/multi/quacken.php&m=Invalid%20Session");
   }
 	response = JSON.parse(response);
 
@@ -171,7 +171,7 @@ function addMessages(messages) {
 
 function addMessage (message, type = 'note') {
 	const box = document.getElementById('textbox');
-	const autoScroll = box.scrollHeight < 100 || box.scrollTop + 100 == box.scrollHeight;
+	const autoScroll = box.scrollHeight < 100 || box.scrollTop + 110 >= box.scrollHeight;
 	let p;
 	if (!message) return;
 
@@ -231,7 +231,7 @@ function addRemovePlayer(name, vars) {
 function serverRequest(url, callback) {
 	const xmlhttp = new XMLHttpRequest();
 	timeOut ++;
-	if (timeOut > 10) window.location.replace("/accounts.php?target=/dev/quacken.php&m=Connection%20timed%20out");
+	if (timeOut > 10) window.location.replace("/accounts.php?target=/multi/quacken.php&m=Connection%20timed%20out");
 
 	xmlhttp.onreadystatechange = function() {
 		if (this.readyState == 4 && this.status == 200) {
@@ -304,8 +304,8 @@ function endTurn() {
 
 function stepBoats() {
 	const move = turn[step];
-	const nextMove = turn[step + 1];
-	let time = nextMove.length ? 750 : 250;
+	const nextMove = turn[step + 1].length;
+	let time = nextMove ? 750 : 250;
 
 	for (let boatUpdate of move) {
 		const [uid, direction, move, x, y, treasure, crunchDir, damage] = boatUpdate;

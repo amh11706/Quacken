@@ -83,7 +83,7 @@ function spawnBoat(array &$boats) {
 <head>
 <title>Disturb the Quacken</title>
 <base target="_top">
-<link rel="stylesheet" type="text/css" href="quacken0_2.css">
+<link rel="stylesheet" type="text/css" href="quacken0_3.css">
 </head>
 
 <body>
@@ -169,8 +169,8 @@ function spawnBoat(array &$boats) {
 	</div>
 </div>
 
-<script src="classes/Boat.js"></script>
-<script src="classes/Dragable.js"></script>
+<script src="classes/Boat0_3.js"></script>
+<script src="classes/Dragable0_3.js"></script>
 
 <script>
 const myBoat = <?php echo $id;?>;
@@ -195,7 +195,7 @@ let boats = {};
 }());
 </script>
 
-<script src="quacken0_2.js"></script>
+<script src="quacken0_3.js"></script>
 
 <script>
 syncTimer();

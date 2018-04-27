@@ -35,7 +35,7 @@ document.addEventListener('keydown', function(event) {
 });
 
 window.addEventListener('beforeunload', function() {
-  serverRequest("leave.php?id=" + myBoat);
+  fetch("leave.php?id=" + myBoat, { credentials: 'include' });
 });
 
 function syncTimer() {

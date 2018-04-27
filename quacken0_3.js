@@ -1,10 +1,11 @@
 let freezeMyMoves = false;
 let waitingForTurn = false;
+let blurred = false;
 let timeOut = 0;
 let step = 7;
 let turn;
 let animateTimeout;
-let blurred = false;
+let dragging;
 
 const mapBox = new Dragable(
   document.getElementById('mapframe'),

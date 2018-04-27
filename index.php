@@ -82,7 +82,6 @@ function spawnBoat(array &$boats) {
 <html>
 <head>
 <title>Disturb the Quacken</title>
-<base target="_top">
 <link rel="stylesheet" type="text/css" href="quacken0_3.css">
 </head>
 

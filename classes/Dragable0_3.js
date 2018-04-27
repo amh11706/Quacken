@@ -6,30 +6,55 @@ class Dragable {
 		this.offsetY = 0;
 		this.dragElement = dragElement;
 
-		dragFrame.onmousedown = event => this.onDown(event);
+		dragFrame.addEventListener('mousedown', this.onDown.bind(this));
+		dragFrame.addEventListener('touchstart', this.touchStart.bind(this));
 	}
 
 	onDown(event) {
-		document.onmousemove = event => this.onMove(event);
-		document.onmouseleave = event => this.onUp(event);
-		document.onmouseup = event => this.onUp(event);
+		dragging = this;
+		document.addEventListener('mousemove', dragging.onMove);
+		document.addEventListener('mouseleave', dragging.onUp);
+		document.addEventListener('mouseup', dragging.onUp);
 		event.preventDefault();
 
 		this.startX = event.clientX;
 		this.startY = event.clientY;
 	}
 
+	touchStart(event) {
+		dragging = this;
+		document.addEventListener('touchmove', dragging.touchMove);
+		document.addEventListener('touchcancel', dragging.touchEnd);
+		document.addEventListener('touchend', dragging.touchEnd);
+
+		const touch = event.touches[0];
+		this.startX = touch.clientX;
+		this.startY = touch.clientY;
+	}
+
 	onMove(event) {
-		this.offsetX += event.clientX - this.startX;
-		this.offsetY += event.clientY - this.startY;
-		this.startX = event.clientX;
-		this.startY = event.clientY;
-		this.dragElement.style.transform = `translate(${this.offsetX}px,${this.offsetY}px)`;
+		dragging.offsetX += event.clientX - dragging.startX;
+		dragging.offsetY += event.clientY - dragging.startY;
+		dragging.startX = event.clientX;
+		dragging.startY = event.clientY;
+		dragging.dragElement.style.transform = `translate(${dragging.offsetX}px,${dragging.offsetY}px)`;
+	}
+
+	touchMove(event) {
+		dragging.onMove(event.touches[0]);
 	}
 
 	onUp() {
-		document.onmousemove = null;
-		document.onmouseleave = null;
-		document.onmouseup = null;
+		document.removeEventListener('mousemove', dragging.onMove);
+		document.removeEventListener('mouseleave', dragging.onUp);
+		document.removeEventListener('mouseup', dragging.onUp);
+		dragging = null;
+	}
+
+	touchEnd() {
+		document.removeEventListener('touchmove', dragging.touchMove);
+		document.removeEventListener('touchcancel', dragging.touchEnd);
+		document.removeEventListener('touchend', dragging.touchEnd);
+		dragging = null;
 	}
 }

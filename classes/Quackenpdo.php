@@ -6,10 +6,10 @@ class QuackenPDO extends PDO {
   private $lobby;
 
   public function __construct() {
-    $this->token = $_COOKIE['token'];
+    if (isset($_COOKIE['token'])) $this->token = $_COOKIE['token'];
     $this->ip = $_SERVER['REMOTE_ADDR'];
 
-    parent::__construct('mysql:dbname=krakenhunt;host=localhost', 'root', '',
+    parent::__construct('mysql:dbname=krakenhunt;host=localhost', 'root', 'pmHe5l5yp',
         array(PDO::ATTR_PERSISTENT => true,
               PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_NUM));
   }
@@ -38,11 +38,30 @@ class QuackenPDO extends PDO {
     return $this;
   }
 
-  public function getUser() {
-    $sth = $this->prepare("SELECT UserName, Token FROM users
-        WHERE Token = ? AND IP = '$this->ip' LIMIT 1");
+  public function getUser(string $columns = 'UserName, Token') {
+    $sth = $this->prepare(
+     "SELECT $columns FROM users
+      WHERE Token = ? AND IP = '$this->ip' LIMIT 1"
+    );
     $sth->execute(array( $this->token ));
     return $sth->fetch(PDO::FETCH_ASSOC);
+  }
+
+  public function getLockout() {
+    $lockout = $this->query(
+     "SELECT Count FROM lockout
+      WHERE IP = '$this->ip' LIMIT 1"
+    )->fetch();
+    if ($lockout) return $lockout[0];
+  }
+
+  public function setLockout($count) {
+    if (!$this->exec(
+     "UPDATE lockout SET Count = $count
+      WHERE IP = '$this->ip' LIMIT 1"
+    )) {
+			$this->exec("INSERT INTO lockout VALUES ('$this->ip', 1)");
+		}
   }
 
   public function getLobbyUser(string $columns) {

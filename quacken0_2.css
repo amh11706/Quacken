@@ -14,15 +14,15 @@ div {
 	background-color: #0b5394;
 }
 #dragmap {
-	position: fixed;
+	position: absolute;
 	top: -1500px;
-	right: 50%;
+	left: -600px;
 	width: 1250px;
 	height: auto;
 	border: 1px solid grey;
 	transform: rotateX(45deg) rotateZ(-45deg);
 }
-.maptile {
+.tile {
 	box-sizing: border-box;
 	float: left;
 	height: 50px;
@@ -30,10 +30,6 @@ div {
 	border: 1px solid grey;
 }
 .sztile	{
-	box-sizing: border-box;
-	float: left;
-	height: 50px;
-	width: 50px;
 	background-color: #0c5ea8;
 	border: 1px solid #3778b3;
 }
@@ -76,7 +72,7 @@ div {
 	height: 8px;
 	background-color: grey;
 }
-.maptile .unrotate {
+.tile .unrotate {
 	transform: rotate(45deg);
 }
 .hidden {display: none;}
@@ -102,15 +98,26 @@ div {
 	min-width: 50px;
 	min-height: 20px;
 }
-meter::-webkit-meter-optimum-value {background: red;}
-meter::-moz-meter-bar {background: red;}
-meter::-webkit-meter-bar {background: darkgrey;}
-
-#damage, #movesource, #buttons {
+#movesource, #buttons {
 	float: left;
 	width: 150px;
 	min-height: 10px;
 	margin: 5px 10px;
+}
+#damage {
+	float: left;
+	margin: 5px 40px;
+	width: 90px;
+	height: 15px;
+	background-color: #aaaaaa;
+	overflow: hidden;
+}
+#damagemeter {
+	position: relative;
+	background: red;
+	height: 15px;
+	left: -100%;
+	transition: .3s linear;
 }
 #time {
 	position: relative;
@@ -119,12 +126,12 @@ meter::-webkit-meter-bar {background: darkgrey;}
 	height: 76px;
 	width: 15px;
 	background-color: #aaaaaa;
+	overflow: hidden;
 }
 #timebar {
-	position: absolute;
-	bottom: 0;
+	position: relative;
 	height: 76px;
-	width: 15px;
+	top: 100%;
 	background-color: khaki;
 	transition: .9s linear;
 }
@@ -232,7 +239,7 @@ img.tiles {
 }
 #turncount {
 	margin-left: 50%;
-	transform: translate(-50%, 0); 
+	transform: translate(-50%, 0);
 	color: khaki;
 	font-size: 20px;
 }

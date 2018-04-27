@@ -5,6 +5,7 @@ require 'classes/Quackenpdo.php';
 if (isset($_COOKIE['token']) && isset($_GET['id']) &&
 		isset($_GET['m']) && isset($_GET['r'])) {
 	$uid = $_GET['id'];
+	$response = array();
 	$conn = new QuackenPDO();
 	$conn->setUser($uid)
 			 ->setLobby('lobby1');
@@ -39,10 +40,10 @@ if ($user['Ready'] && !$leftBehind) $turnString = checkAndDoTurn($conn);
 else $turnString = getTurn($conn, $turn);
 if ($turnString) $response[] = $turnString;
 
-if (isset( $response )) echo json_encode($response);
+echo json_encode($response);
 
 function kick() {
-	echo 'kick';
+	echo '"kick"';
 	exit;
 }
 

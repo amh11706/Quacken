@@ -29,7 +29,10 @@ class Turn {
 			$y = $boat->getY();
 			$this->boatMap[$y][$x] = $boat;
 
-			if ($y > $this->mapHeight - 4 && $y < $this->mapHeight && $x >= 0 && $x < $this->mapWidth) {
+			if (
+				$y > $this->mapHeight - 4 && $y < $this->mapHeight
+				&& $x >= 0 && $x < $this->mapWidth
+			) {
 				$boat->setInSZ();
 			}
 		}
@@ -321,6 +324,8 @@ class Turn {
 				$treasureArray[$treasure[2] - 1]++;
 
 				$turns = $this->Turn - $treasure[3];
+				if ($turns < 0) $turns += 90;
+				
 				$seconds = ($turns % 3) * 20;
 				if (!$seconds) $seconds = '00';
 				$timeString = (int)($turns / 3) . ':' . $seconds;

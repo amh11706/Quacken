@@ -216,7 +216,10 @@ class Turn {
 			$tryY = $boat->getTryY();
 			if ($this->boatTryMap[$tryY][$tryX] !== $boat) continue;
 
-			unset($this->boatMap[$boat->getY()][$boat->getX()]);
+			$x = $boat->getX();
+			$y = $boat->getY();
+			if ($this->boatMap[$y][$x] === $boat) unset($this->boatMap[$y][$x]);
+
 			$boat->setPos($tryX, $tryY);
 			$this->boatMap[$tryY][$tryX] = $boat;
 

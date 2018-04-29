@@ -155,9 +155,6 @@ class Boat {
 
 	public function fetchStatus() {
 		$response = array($this->ID, $this->tryFace, $this->tryMove, $this->X, $this->Y, $this->Treasure);
-		$this->tryMove = 0;
-		$this->tryX = $this->X;
-		$this->tryY = $this->Y;
 
 		if (isset( $this->crunchDir )) {
 			$response[] = $this->crunchDir;

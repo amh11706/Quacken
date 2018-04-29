@@ -82,7 +82,7 @@ function spawnBoat(array &$boats) {
 <html>
 <head>
 <title>Disturb the Quacken</title>
-<link rel="stylesheet" type="text/css" href="quacken0_3.css">
+<link rel="stylesheet" type="text/css" href="quacken0_4.css">
 </head>
 
 <body>
@@ -194,7 +194,7 @@ let boats = {};
 }());
 </script>
 
-<script src="quacken0_3.js"></script>
+<script src="quacken0_4.js"></script>
 
 <script>
 syncTimer();

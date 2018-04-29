@@ -4,7 +4,7 @@ require 'classes/Quackenpdo.php';
 if (isset($_COOKIE['token']) && isset($_GET['id']) && isset($_GET['m'])) {
 	$conn = new QuackenPDO();
 	$conn->setUser($_GET['id'])
-			 ->setLobby('lobby1');
+		->setLobby('lobby1');
 } else exit;
 
 $user = $conn->getLobbyUser('UserName, ChatIndex');

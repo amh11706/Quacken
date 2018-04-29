@@ -8,7 +8,7 @@ if (isset($_COOKIE['token']) && isset($_GET['id']) &&
 	$response = array();
 	$conn = new QuackenPDO();
 	$conn->setUser($uid)
-			 ->setLobby('lobby1');
+		->setLobby('lobby1');
 } else kick();
 
 $user = $conn->getLobbyUser('ChatIndex, CurrentTurn, Idle');
@@ -22,22 +22,22 @@ if (strlen( $_GET['r'] ) === 1 && preg_match( '/^[0-3]{4}$/', $_GET['m'] )) {
 $conn->removeGhosts();
 
 $moves = $conn->query("SELECT ID, Moves FROM lobby1 WHERE ID <> $uid")
-		->fetchAll();
+	->fetchAll();
 if ($moves) $response[] = array('moves', $moves);
 
 $messages = $conn->getNewChat($user['ChatIndex']);
-if ($messages) $response[] = array('messages', $messages);
-$user['ChatIndex'] += count($messages);
+if ($messages) {
+	$response[] = array('messages', $messages);
+	$user['ChatIndex'] += count($messages);
+}
 
 if ($user['Moves'] !== '0000') $user['Idle'] = 0;
 $conn->updateLobbyUser($user);
 
-$turn = $user['CurrentTurn'];
-$leftBehind = $conn->query("SELECT CurrentTurn FROM lobby1
-		WHERE CurrentTurn <> $turn")->fetch();
-
-if ($user['Ready'] && !$leftBehind) $turnString = checkAndDoTurn($conn);
-else $turnString = getTurn($conn, $turn);
+$turnString = getTurn($conn, $user['CurrentTurn']);
+if (!$turnString && $user['Ready']) {
+	$turnString = checkAndDoTurn($conn, $user['CurrentTurn']);
+}
 if ($turnString) $response[] = $turnString;
 
 echo json_encode($response);
@@ -48,26 +48,35 @@ function kick() {
 }
 
 function getTurn(QuackenPDO $conn, int $turn) {
-	if ($result = $conn->query("SELECT TurnString, TreasureString, Turn
-			FROM lobbies WHERE Turn <> $turn")->fetch()) {
+	if ($result = $conn->query(
+	 "SELECT TurnString, TreasureString, Turn
+		FROM lobbies WHERE Turn <> $turn"
+	)->fetch()) {
 		$conn->updateLobbyUser(array( 'CurrentTurn' => $result[2], 'Ready' => 0 ));
 		return array_merge(array( 'turn' ), $result);
 	}
 }
 
-function checkAndDoTurn(QuackenPDO $conn) {
-	if ($conn->query("SELECT Ready FROM lobby1 WHERE Ready = 0 AND Idle = 0")->fetch() ||
-		 !$conn->exec("UPDATE lobbies SET TurnActive = 1 WHERE TurnActive = 0")) return;
+function checkAndDoTurn(QuackenPDO $conn, int $turn) {
+	if (
+		$conn->query(
+		 "SELECT Ready FROM lobby1
+		 	WHERE Ready = 0 AND Idle = 0 OR CurrentTurn <> $turn"
+		)->fetch() || !$conn->exec(
+		 "UPDATE lobbies SET TurnActive = 1
+		 	WHERE UNIX_TIMESTAMP(Timestamp) < (UNIX_TIMESTAMP() - 5)"
+		)
+	) return;
 
 	require 'classes/Turn.php';
 	require 'classes/Boat.php';
 
 	$turnObj = $conn->query("SELECT Map, TreasureString, Turn FROM lobbies")
-			->fetchAll(PDO::FETCH_CLASS, 'Turn')[0];
+		->fetchAll(PDO::FETCH_CLASS, 'Turn')[0];
 
-	$turnObj->insertBoats($conn->query("SELECT
-			ID, UserName, Moves, X, Y, Face, Damage, Treasure, SpawnTurn FROM lobby1")
-			->fetchAll(PDO::FETCH_CLASS, 'Boat'));
+	$turnObj->insertBoats($conn->query(
+	 "SELECT ID, UserName, Moves, X, Y, Face, Damage, Treasure, SpawnTurn FROM lobby1"
+	)->fetchAll(PDO::FETCH_CLASS, 'Boat'));
 
 	$response = array('turn', $turnObj->doTurn(), $turnObj->updateTreasure($conn));
 	$turnObj->updateDB($conn);

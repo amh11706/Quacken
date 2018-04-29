@@ -178,9 +178,10 @@ class Turn {
 			$y = $boat->getY();
 			$sitting = ($blockX === $tryX && $blockY === $tryY);
 
-			if ($sitting || ( $blockX === $x && $blockY === $y ) || !$allowPush) {
+			if ($sitting || ( $blockX === $x && $blockY === $y)) {
 				$this->blockTile($tryX, $tryY);
 			}
+
 			if (!$sitting || $boat->getTryMove() !== 2 || !$allowPush) continue;
 
 			$dir = $boat->getTryFace();
@@ -325,7 +326,7 @@ class Turn {
 
 				$turns = $this->Turn - $treasure[3];
 				if ($turns < 0) $turns += 90;
-				
+
 				$seconds = ($turns % 3) * 20;
 				if (!$seconds) $seconds = '00';
 				$timeString = (int)($turns / 3) . ':' . $seconds;

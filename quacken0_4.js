@@ -5,7 +5,6 @@ let timeOut = 0;
 let step = 7;
 let turn;
 let animateTimeout;
-let dragging;
 
 const mapBox = new Dragable(
   document.getElementById('mapframe'),

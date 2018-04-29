@@ -169,7 +169,7 @@ function spawnBoat(array &$boats) {
 </div>
 
 <script src="classes/Boat0_3.js"></script>
-<script src="classes/Dragable0_3.js"></script>
+<script src="classes/Dragable0_4.js"></script>
 
 <script>
 const myBoat = <?php echo $id;?>;

@@ -1,7 +1,7 @@
 <?php
 /*
 This is the entry point for the multi player lobby. You must have a valid token
-or have requested the page qirh rhw "guest" parameter set to prevent being
+or have requested the page with the "guest" parameter set to prevent being
 redirected to the login page.
 */
 
@@ -62,7 +62,10 @@ $conn->exec(
 );
 
 function kick() {
-	if ($_COOKIE['token'] != 'Guest') setcookie('token', null, 1, '/');
+	if (isset($_COOKIE['token']) && $_COOKIE['token'] != 'Guest') {
+		setcookie('token', null, 1, '/');
+	}
+	
 	header('Location: /accounts.php?target=' . $_SERVER['REQUEST_URI']);
 	exit;
 }

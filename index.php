@@ -1,14 +1,21 @@
 <?php
 require 'classes/Quackenpdo.php';
 
-if (isset($_COOKIE['token'])) $conn = new QuackenPDO();
-else kick();
+$conn = new QuackenPDO();
+
+if (isset($_GET['guest'])) {
+	$user = [
+		UserName => 'Guest',
+		Token => 'Guest'
+	];
+	setcookie('token', 'Guest', 0, '/');
+} else if (isset($_COOKIE['token'])) {
+	$user = $conn->getUser();
+	if (!$user) kick();
+} else kick();
 
 $conn->setLobby('lobby1')
 		 ->removeGhosts();
-
-$user = $conn->getUser();
-if (!$user) kick();
 
 $pcount = $conn->query("SELECT COUNT(ID) FROM lobby1")->fetch()[0];
 if ($pcount > 1) $message = 'are ' . $pcount . ' other players';
@@ -49,7 +56,7 @@ $conn->exec(
 );
 
 function kick() {
-	setcookie('token', null, 1, '/');
+	if ($_COOKIE['token'] != 'Guest') setcookie('token', null, 1, '/');
 	header('Location: /accounts.php?target=' . $_SERVER['REQUEST_URI']);
 	exit;
 }

@@ -1,4 +1,11 @@
 <?php
+/*
+This script is triggered when a user pings the server on a 1 second interval.
+It returns a json encoded array containing the message(s) to add to the user's
+chat box, other boat's moves if there are any, and the turn to animate if there
+is a new one to send.
+*/
+
 ignore_user_abort(true);
 require 'classes/Quackenpdo.php';
 

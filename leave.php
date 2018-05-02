@@ -1,4 +1,8 @@
 <?php
+/*
+This script is triggered when a user closes or redirects their browser window.
+*/
+
 ignore_user_abort(true);
 require 'classes/Quackenpdo.php';
 

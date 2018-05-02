@@ -1,12 +1,18 @@
 <?php
+/*
+This is the entry point for the multi player lobby. You must have a valid token
+or have requested the page qirh rhw "guest" parameter set to prevent being
+redirected to the login page.
+*/
+
 require 'classes/Quackenpdo.php';
 
 $conn = new QuackenPDO();
 
 if (isset($_GET['guest'])) {
 	$user = [
-		UserName => 'Guest',
-		Token => 'Guest'
+		'UserName' => 'Guest',
+		'Token' => 'Guest'
 	];
 	setcookie('token', 'Guest', 0, '/');
 } else if (isset($_COOKIE['token'])) {

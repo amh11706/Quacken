@@ -15,6 +15,10 @@ const timeBox = new Dragable(
   document.getElementById('timer')
 );
 
+
+
+// event listeners
+
 document.addEventListener('visibilitychange', function() {
   blurred = document.hidden;
 
@@ -37,6 +41,10 @@ document.addEventListener('keydown', function(event) {
 window.addEventListener('beforeunload', function() {
   fetch("leave.php?id=" + myBoat, { credentials: 'include' });
 });
+
+
+
+// timer functions
 
 function syncTimer() {
 	document.getElementById('timebar').style.transition = '';
@@ -64,6 +72,12 @@ function updateTimer() {
 	document.getElementById('timebar').style.transform = `translateY(-${seconds % 20 * 4 - 4}px)`;
 }
 
+function ready() {
+	document.getElementById('go').disabled = true;
+	freezeMyMoves = true;
+	waitingForTurn = true;
+}
+
 function startNewRound() {
 	addMessage('New round starting.');
   document.getElementById('go').disabled = false;
@@ -72,29 +86,9 @@ function startNewRound() {
   updateTimer();
 }
 
-function drawMap(map) {
-	const dragMap = document.getElementById("dragmap");
-  const obstacles = document.querySelectorAll('.obstacle');
 
-	for (let row = 0; row < 49; row++) {
-		for (let column = 0; column < 25; column++) {
-      const tile = document.createElement('div');
-      tile.className = 'tile';
 
-      if (map[row][column]) {
-        tile.appendChild(obstacles[map[row][column] - 1].cloneNode());
-      }
-
-      dragMap.appendChild(tile);
-		}
-	}
-
-	for (let tile = 0; tile < 75; tile++) {
-    const tile = document.createElement('div');
-    tile.className = 'tile sztile';
-		dragMap.appendChild(tile);
-	}
-}
+// server requests
 
 function sendInput (e) {
 	const textBox = document.getElementById('textinput');
@@ -164,6 +158,88 @@ function parseResponse(response) {
 	}
 }
 
+
+
+// map and turn functions
+
+function drawMap(map) {
+	const dragMap = document.getElementById("dragmap");
+  const obstacles = document.querySelectorAll('.obstacle');
+
+	for (let row = 0; row < 49; row++) {
+		for (let column = 0; column < 25; column++) {
+      const tile = document.createElement('div');
+      tile.className = 'tile';
+
+      if (map[row][column]) {
+        tile.appendChild(obstacles[map[row][column] - 1].cloneNode());
+      }
+
+      dragMap.appendChild(tile);
+		}
+	}
+
+	for (let tile = 0; tile < 75; tile++) {
+    const tile = document.createElement('div');
+    tile.className = 'tile sztile';
+		dragMap.appendChild(tile);
+	}
+}
+
+function startTurn(turnString) {
+  waitingForTurn = false;
+  turn = JSON.parse(turnString[1]);
+
+	if (blurred) {
+		clearMyMoves();
+		endTurn();
+	} else {
+		step = 0;
+		document.getElementById('go').disabled = true;
+    if (animateTimeout) clearTimeout(animateTimeout);
+		stepTurn();
+	}
+
+  if (turnString[3] != 0) timer = (90 -turnString[3]) * 20;
+  else {
+    timer = 0;
+    setTimeout(startNewRound, 5050);
+  }
+
+  updateTimer();
+	updateTreasure(JSON.parse( turnString[2] ));
+}
+
+function endTurn() {
+  animateTimeout = null;
+  const turnSync = turn[8];
+
+	for (let boatSync of turnSync) {
+		const boat = boats[boatSync[0]];
+		if (boat) boat.sync(...boatSync)
+	}
+
+	if (timer > 0) document.getElementById('go').disabled = false;
+}
+
+function stepTurn() {
+  const move = turn[step];
+
+	for (let boatUpdate of move) {
+		const boat = boats[boatUpdate[0]];
+		if (boat) boat.update(...boatUpdate);
+	}
+
+	step++;
+  if (step === 4) clearMyMoves();
+  const time = turn[step].length ? 750 : 250;
+	animateTimeout = step < 8 ? setTimeout(stepTurn, time) : setTimeout(endTurn, 1500);
+}
+
+
+
+// chatbox updates
+
 function addMessages(messages) {
 	for (let message of messages) {
 		switch (message[2]) {
@@ -217,13 +293,6 @@ function tresSum(treasure) {
   }
 }
 
-function updateMoves(allMoves) {
-	for (let moves of allMoves) {
-		const boat = boats[moves[0]];
-		if (boat) boat.updateMoves(moves[1]);
-	}
-}
-
 function addRemovePlayer(name, vars) {
 	const [action, uid, x, y] = vars.split(' ');
 	if (uid == myBoat) return;
@@ -239,67 +308,15 @@ function addRemovePlayer(name, vars) {
 	}
 }
 
-function readyButton() {
-	document.getElementById('go').disabled = true;
-	freezeMyMoves = true;
-	waitingForTurn = true;
-	getUpdates();
-}
 
-function ready() {
-	document.getElementById('go').disabled = true;
-	freezeMyMoves = true;
-	waitingForTurn = true;
-}
 
-function startTurn(turnString) {
-  waitingForTurn = false;
-  turn = JSON.parse(turnString[1]);
+// interface updates
 
-	if (blurred) {
-		clearMyMoves();
-		endTurn();
-	} else {
-		step = 0;
-		document.getElementById('go').disabled = true;
-    if (animateTimeout) clearTimeout(animateTimeout);
-		stepTurn();
-	}
-
-  if (turnString[3] != 0) timer = (90 -turnString[3]) * 20;
-  else {
-    timer = 0;
-    setTimeout(startNewRound, 5050);
+function updateMoves(allMoves) {
+  for (let moves of allMoves) {
+    const boat = boats[moves[0]];
+    if (boat) boat.updateMoves(moves[1]);
   }
-
-  updateTimer();
-	updateTreasure(JSON.parse( turnString[2] ));
-}
-
-function endTurn() {
-  animateTimeout = null;
-  const turnSync = turn[8];
-
-	for (let boatSync of turnSync) {
-		const boat = boats[boatSync[0]];
-		if (boat) boat.sync(...boatSync)
-	}
-
-	if (timer > 0) document.getElementById('go').disabled = false;
-}
-
-function stepTurn() {
-  const move = turn[step];
-
-	for (let boatUpdate of move) {
-		const boat = boats[boatUpdate[0]];
-		if (boat) boat.update(...boatUpdate);
-	}
-
-	step++;
-  if (step === 4) clearMyMoves();
-  const time = turn[step].length ? 750 : 250;
-	animateTimeout = step < 8 ? setTimeout(stepTurn, time) : setTimeout(endTurn, 1500);
 }
 
 function updateTreasure(treasure) {
@@ -324,8 +341,19 @@ function clearMyMoves() {
 	freezeMyMoves = timer < 0;
 
 	for (let tile of tiles) {
-		if (tile.firstChild) tile.removeChild(tile.firstChild);
+		tile.innerHTML = '';
 	}
+}
+
+
+
+// input handling
+
+function readyButton() {
+	document.getElementById('go').disabled = true;
+	freezeMyMoves = true;
+	waitingForTurn = true;
+	getUpdates();
 }
 
 function clickTile(ev) {

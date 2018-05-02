@@ -23,8 +23,8 @@ div {
 }
 #dragmap {
 	position: absolute;
-	top: -1500px;
-	left: -600px;
+	top: -1400px;
+	left: -400px;
 	width: 1250px;
 	height: auto;
 	border: 1px solid grey;

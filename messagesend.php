@@ -1,4 +1,10 @@
 <?php
+/*
+This script is triggered when a user sends a chat messsage to the lobby chat.
+It returns a json encoded array containing the message(s) to add to the user's
+chat box.
+*/
+
 require 'classes/Quackenpdo.php';
 
 if (isset($_COOKIE['token']) && isset($_GET['id']) && isset($_GET['m'])) {
